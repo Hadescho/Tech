@@ -35,45 +35,48 @@ end
 =end
 def fillPlane (seat)
 	is_full = false
+	
 	while !is_full
-	group = generateGroup()
-	
-	if group == 1
-	
-		while line<27 
-			while col<6 
-				if seat[line][col] == 0
-					seat[line][col] = 1
-					line = 27
-					break
-				end
-				col+=1
-			end
-			line+=1
-			
-			
-		end
-		end
-	if group == 2
-	
-		while line<27 in 0..26
-			while col<5 in 0..4
-				if (seat[line][col]==0) && (seat[line][col+1]==0) && (col!=2)
-					seat[line][col]=2
-					seat[line][col+1]=2
-					line = 27
-					break
-				col+=1
-				end
+		group = generateGroup()
+		
+		if group == 1
+			line = 0
+
+			while line<27 
+				col = 0
 				
+				while col<6 
+					if seat[line][col] == 0
+						seat[line][col] = 1
+						line = 27
+						break
+					end
+					col += 1
+				end
+				line += 1
 			end
-			line+=1
+		elsif group == 2
+			line = 0
 			
+			while line<27
+				col = 0
+				
+				while col<5
+					if (seat[line][col]==0) && (seat[line][col+1]==0) && (col!=2)
+						seat[line][col]=2
+						seat[line][col+1]=2
+						line = 27
+						break
+					col+=1
+					end
+					
+				end
+				line+=1
+			end
+		elsif group == 3
+			line = 0
 			
-		end
-	end
-	if group == 3
-		for line in 0..26
+			while line < 27
 				if (seat[line][0]==0) && (seat[line][1]==0) && (seat[line][2]==0)
 					seat[line][0]=3
 					seat[line][1]=3
@@ -83,21 +86,21 @@ def fillPlane (seat)
 					seat[line][4]=3
 					seat[line][5]=3
 				end
-		end
-	end
-	if true
-	is_full = true
-	for line in 0..26
-		for col in 0..5
-			if seat[line][col] == 0 
-				is_full = false
 			end
-			
 		end
-	end
-	end
-	puts""
-	display(seat)
+		
+		if true
+			is_full = true
+			for line in 0..26
+				for col in 0..5
+					if seat[line][col] == 0 
+						is_full = false
+					end
+				end
+			end
+		end
+		puts""
+		display(seat)
 	end
 end
 
