@@ -7,7 +7,7 @@ def zerolator (seat)
 end
 
 def display (seat)
-	system("cls")
+	system("clear")
 	puts ""
 	for line in 0..26
 		for col in 0..5
