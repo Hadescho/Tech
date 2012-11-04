@@ -1,0 +1,4 @@
+ii = 3
+for i in 1..ii
+	puts i
+end

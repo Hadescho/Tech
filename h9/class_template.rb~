@@ -1,0 +1,68 @@
+#!/bin/env ruby
+# encoding: utf-8
+# I'm using encoding in order to be able to read cyrilic
+
+	class Student
+	@klas 
+	@number
+	@name
+	@email
+	@belt
+	@error
+	
+	def set_Klas(new_klas)
+		@klas = new_klas.downcase
+		if @klas == "11 a" or @klas == "11 а" or @klas == "11a" or @klas == "11а" or @klas == "xi a" or @klas == "xia" or @klas == "xi а" or @klas == "xiа" 
+			@klas = "11a"
+		
+		elsif @klas == "11 b" or @klass == "11 б" or @klas == "11b" or @klass == "11б" or @klas == "xi b" or @klas == "xib" or @klas == "xi б" or @klas == "xiб"
+			@klas = "11b"
+			
+		else 
+			@error = true
+			puts "Error : Wrong class format"
+		end
+	end
+	
+	
+	def set_Number(num)
+		@number = num.to_i
+		if @number == 0
+			@error = true
+			puts "Error : nonnumeric string in @number"
+		end
+	end
+	
+	def set_Name(name)
+		@name = name.capitalize
+	end
+	
+	def set_Email(email)
+		@email = email.downcase
+	end
+	
+	def get_Email()
+		return @email
+	end
+	
+	def set_Belt(belt)
+		@belt = belt.downcase
+	end 	
+
+	def print_on_screen()
+		if @error != true
+			puts "#{@klas},#{@number},#{@name},#{@email},#{@belt}"
+		end
+	end
+end
+
+=begin
+--------Debuging class
+	students = Student.new
+	students.set_Klas("11 а")
+	students.set_Number ("22")
+	students.set_Name ("Николай Тихомиров Коцев")
+	students.set_Email ("Nikolay_Kotzev@abv.bg")
+	students.set_Belt ("White")
+	students.print_on_screen()
+=end
