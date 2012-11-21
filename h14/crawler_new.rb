@@ -2,10 +2,16 @@ require "net/http"
 require "uri"
 
 
+$linkArray = Array.new(1,nil)
+$pageArray = Array.new(1,nil)
 
 
 def makeTxtName(givenDomainName , givenOther)
-	givenDomainNameCopy = String.new(givenDomainName)
+	if givenDomainName.kind_of?(Link)
+		givenDomainNameCopy = String.new(givenDomainName.getUrl)
+	else
+		givenDomainNameCopy = String.new(givenDomainName)
+	end
 	givenOtherCopy = String.new(givenOther)
 	givenDomainNameCopy.slice!("http://")
 	while true
@@ -79,14 +85,20 @@ end
 
 
 class Page 
-	attr_accessor :url, :links, :element, :fileName, :source
+	attr_accessor :url, :links,:arrayCounter, :element, :fileName, :source
 	@links = Array.new
+	@arrayCounter = 0
+
+	def initialize (givenUrl)
+		@url = givenUrl
+	end
+
 	def stripProtocol(givenUrl)
 		givenUrl.slice!("Http://")
 		givenUrl.slice!("http://")
 	end
 	
-	def setPage(givenDomainName , givenOther) # makes txt file without white spaces or /" 
+	def setPage(givenDomainName , givenOther) # Not working really well
 		@fileName = makeTxtName(givenDomainName , givenOther)
 		f = File.open(@fileName, "w")
 		@source = Net::HTTP.get(givenDomainName,givenOther)
@@ -95,10 +107,15 @@ class Page
 		f<<@source
 	end
 
-	def setPageUri(givenUrl)
+	def setPageUri(givenUrl=@url)
 		@fileName = makeTxtName(givenUrl,"")
 		f = File.open(@fileName, "w")
-		@source = Net::HTTP.get_response(URI.parse(givenUrl)).body
+		if givenUrl.kind_of?(Link)
+			puts givenUrl.getUrl
+			@source = Net::HTTP.get_response(URI.parse(givenUrl.getUrl)).body
+		else
+			@source = Net::HTTP.get_response(URI.parse(givenUrl)).body
+		end
 		@source = @source.gsub(/\s+/, "")
 		#@source = @source.gsub(/\"+/, "")
 		f<<@source
@@ -118,21 +135,18 @@ class Page
 			end
 			@element = Link.new
 			@element.setUrl(tempString)
-			if counter == 0 
-				@links = Array.new
-				counter = 1
+			
+			#puts tempString
+			$linkArray.push(@element)
+			if $linkArray[0] == nil
+				$linkArray.delete(nil)
 			end
-			@links.append(@element)
 		end
-			puts @links[0].getUrl	
-	end
-	
-	def getFile
-		return @file
+			#puts @links[0].getUrl	
 	end
 
 	def getLinks
-		return @links
+		return $linkArray
 	end
 
 	def getSource
@@ -143,23 +157,41 @@ end
 
 
 class Site
-	attr_accessor :url, :pages, :element
+	attr_accessor :url, :pages, :element, :workUrl
+	
 	def initialize(givenUrl)
 		@url = givenUrl
+		@workUrl  = givenUrl
 	end
-	def follow
+	
+	def follow(steps)
 		counter = 0
-		while counter <= 10
-
+		while counter <= steps
+			tempPage = Page.new(@workUrl)
+			puts @workUrl
+			tempPage.setPageUri(@workUrl)
+			tempPage.setLinks
+			$pageArray.push(tempPage)
+			@workUrl = tempPage.getLinks.pop
+			counter = counter + 1
 		end 
 	end
 
 end
 # -----Test----- #
-
-testpage = Page.new
-testpage.setPageUri('http://elsys-bg.org')
+=begin
+testpage = Page.new('http://lubo.elsys-bg.org/software_engineering/')
+testpage.setPageUri()
 testpage.setLinks
+testpage.getLinks
+
+for i in 0..10
+	puts "-----------------------------------------------"
+end
+puts $linkArray
+testSite = Site.new('http://lubo.elsys-bg.org/software_engineering/')
+testSite.follow(10)
+=end
 # ---EndOfTest-- #
 
 # -----Main----- #
@@ -168,5 +200,4 @@ testpage.setLinks
 
 # ---EndOfMain-- #
 # ----Report---- #
-# greshkata moje da e v tova che dobarvash na secundata "\"" ili che triesh vsichkite ahref-ove
 # --EndOfReport- #
